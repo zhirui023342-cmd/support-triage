@@ -10,7 +10,8 @@ from triage import predict_message
 
 @st.cache_resource(show_spinner=False)
 def load_classifier():
-    return load_saved_classifier()
+    model, _ = load_saved_classifier()
+    return model, 0.53
 
 
 def main():
