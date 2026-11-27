@@ -1,5 +1,7 @@
 # Support Triage
 
+[Try the live demo](https://support-triage-gv7yezupxew78ahbota8hz.streamlit.app)
+
 Support Triage is a Streamlit demo that suggests an intent for an English
 support message or marks it for human review when the model score is too low.
 It uses MiniLM sentence embeddings and a logistic regression classifier trained
