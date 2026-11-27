@@ -5,7 +5,7 @@ support message or marks it for human review when the model score is too low.
 It uses MiniLM sentence embeddings and a logistic regression classifier trained
 on CLINC150.
 
-![Support Triage sends "ignore call" to human review](docs/human-review.png)
+![Support Triage sends "ignore call" to human review](human-review.png)
 
 ## Run locally
 
