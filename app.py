@@ -4,7 +4,7 @@ import logging
 
 import streamlit as st
 
-from semantic import MODEL_PATH, load_saved_classifier
+from semantic import load_saved_classifier, saved_classifier_path
 from triage import predict_message
 
 
@@ -34,7 +34,7 @@ def main():
         st.warning("Enter a support message to analyse.")
         return
 
-    if not MODEL_PATH.is_file():
+    if not saved_classifier_path().is_file():
         st.error("Train the classifier with python semantic.py before using the app.")
         return
 

@@ -13,7 +13,9 @@ from triage import evaluate_validation, load_dataset, train_baseline
 
 ENCODER_ID = "sentence-transformers/all-MiniLM-L6-v2"
 ENCODER_REVISION = "8b3219a92973c328a8e22fadcfa821b5dc75636a"
-MODEL_PATH = Path(__file__).resolve().parent / "data" / "minilm-triage.joblib"
+PROJECT_ROOT = Path(__file__).resolve().parent
+MODEL_PATH = PROJECT_ROOT / "data" / "minilm-triage.joblib"
+DEPLOYED_MODEL_PATH = PROJECT_ROOT / MODEL_PATH.name
 
 
 def make_semantic_model(classifier, *, show_progress=False):
@@ -49,9 +51,13 @@ def train_semantic(dataset, target_coverage, *, show_progress=False):
     return model, policy.threshold
 
 
+def saved_classifier_path():
+    return MODEL_PATH if MODEL_PATH.is_file() else DEPLOYED_MODEL_PATH
+
+
 def load_saved_classifier():
-    """Load the classifier generated locally by this training script."""
-    classifier, threshold = joblib.load(MODEL_PATH)
+    """Load the locally trained or bundled classifier."""
+    classifier, threshold = joblib.load(saved_classifier_path())
     return make_semantic_model(classifier), threshold
 
 
