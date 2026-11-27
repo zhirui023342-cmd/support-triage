@@ -47,34 +47,41 @@ can be high for incorrect predictions.
 
 ## Evaluation
 
-Both models train on the known-intent training split. The baseline turns words
-and two-word phrases into TF-IDF features. MiniLM turns sentences into
-384-dimensional embeddings. Both use logistic regression for classification.
+Both models use logistic regression trained on the known-intent training split.
+The TF-IDF baseline uses words and two-word phrases as features. MiniLM
+represents each message as a 384-dimensional sentence embedding.
 
-The baseline threshold was selected on validation data to maximise routing
-coverage under two demo targets. The targets were 5% or less error among routed
-messages and 10% or less routing of out-of-scope messages. The MiniLM threshold
-was selected on the validation data to match baseline coverage as closely as
-possible. Thresholds were then held fixed for scoring the official test splits,
-which contain 4,500 known-intent and 1,000 out-of-scope messages.
+The initial MiniLM threshold of 0.58 was selected on validation data to match
+the baseline's routing coverage as closely as possible. A follow-up sweep in
+steps of 0.01 identified 0.53 as a candidate. On validation data, moving from
+0.58 to 0.53 increased automatic routing from 68.0% to 73.4%, while accuracy
+among routed messages decreased from 99.5% to 99.3%.
 
-| Model | Threshold | Messages routed | Error among routed | Out-of-scope messages routed |
+The table reports results on the same official CLINC150 test split of 4,500
+known-intent and 1,000 out-of-scope messages.
+
+| Model | Threshold | Automatically routed | Error among routed | Out-of-scope messages routed |
 | --- | ---: | ---: | ---: | ---: |
 | TF-IDF + logistic regression | 0.21 | 60.1% | 5.8% | 7.2% |
-| MiniLM + logistic regression | 0.58 | 57.6% | 1.1% | 1.7% |
+| MiniLM + logistic regression, initial setting | 0.58 | 57.6% | 1.1% | 1.7% |
+| **MiniLM + logistic regression, live demo** | **0.53** | **61.8%** | **1.4%** | **2.2%** |
 
-An automatically routed out-of-scope message counts as a routing error. MiniLM
-lowered that type of error and the overall error among routed messages, while
-sending a slightly larger share of messages to review. The TF-IDF model routed
-“ignore call” to `make_call` at a score of 0.994. MiniLM referred it for review
-at a score of 0.461. The two models' scores are interpreted against their own
-thresholds.
+At 0.53, MiniLM automatically routed 4.2 percentage points more messages than
+at 0.58, with a 0.3-point increase in error among routed messages. Compared
+with the TF-IDF baseline, the live setting routed more messages and reduced
+both error measures. An automatically routed out-of-scope message counts as
+a routing error.
 
-The results reflect the benchmark's mix of intents and out-of-scope examples.
+For example, TF-IDF routed “ignore call” to `make_call` with a score of 0.994.
+MiniLM scored it at 0.461 and referred it for human review at the live threshold
+of 0.53. For “lost debit card”, MiniLM ranked `report_lost_card` first at 0.439
+and also referred the message for review.
+
 Two official test rows match training or validation messages after case and
-whitespace normalisation. Both models were evaluated on the full official split.
+whitespace normalisation. All settings were evaluated on the full official
+test split.
 
-After training, reproduce the comparison:
+After training, reproduce the initial TF-IDF and MiniLM comparison with:
 
 ```bash
 .venv312/bin/python compare_models.py
